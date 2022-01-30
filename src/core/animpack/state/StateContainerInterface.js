@@ -3,8 +3,8 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable getter-return */
 
-import {AbstractState} from './AbstractState';
-import {Utils} from '../../Utils';
+import { AbstractState } from './AbstractState';
+import { Utils } from '../../Utils';
 
 /**
  * Class factory interface for manipulating a collection of {@link AbstractState}.
@@ -22,14 +22,14 @@ export class StateContainerInterface {
    *
    * @returns {AbstractState}
    */
-  getState(name) {}
+  getState(name) { }
 
   /**
    * Gets an array of the names of all states in the container.
    *
    * @type {Array.<string>}
    */
-  getStateNames() {}
+  getStateNames() { }
 
   /**
    * Add a new state to be controlled by the container. States are stored keyed by their name property, which must be unique. If it isn't, a number will be added or incremented until a unique key is generated.
@@ -38,7 +38,7 @@ export class StateContainerInterface {
    *
    * @returns {string} - Unique name of the state.
    */
-  addState(state) {}
+  addState(state) { }
 
   /**
    * Removes a state with the given name from the container.
@@ -47,7 +47,7 @@ export class StateContainerInterface {
    *
    * @returns {boolean} - Whether or not a state was removed.
    */
-  removeState(name) {}
+  removeState(name) { }
 
   /**
    * Renames a state with the given name in the container. Name must be unique to the container, if it isn't the name will be incremented until it is unique.
@@ -57,12 +57,12 @@ export class StateContainerInterface {
    *
    * @returns {string} - Updated name for the state.
    */
-  renameState(currentName, newName) {}
+  renameState(currentName, newName) { }
 
   /**
    * Discards all states.
    */
-  discardStates() {}
+  discardStates() { }
 
   /**
    * Creates a class that implements {@link StateContainerInterface} and extends a specified base class.
@@ -71,7 +71,7 @@ export class StateContainerInterface {
    *
    * @return {Class} A class that extends `BaseClass` and implements {@link StateContainerInterface}.
    */
-  static Mixin(BaseClass = class {}) {
+  static Mixin(BaseClass = class { }) {
     /**
      * This mixin adds functionality for manipulating uniquely-named animation states in a map.
      */
@@ -90,7 +90,11 @@ export class StateContainerInterface {
         return [...this._states.keys()];
       }
 
-      addState(state) {
+      addState(state, debug = false) {
+        if (debug) {
+          console.log('addState()', state);
+        }
+
         // Make sure the state is not already in this container
         if ([...this._states.values()].includes(state)) {
           console.warn(`Cannot add animation to state ${this.name}. Animation was already added.`);
@@ -106,6 +110,9 @@ export class StateContainerInterface {
         }
 
         this._states.set(state.name, state);
+        if (debug) {
+          console.log('this._states.set()', state.name, state);
+        }
 
         return state.name;
       }

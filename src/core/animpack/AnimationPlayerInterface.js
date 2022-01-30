@@ -3,8 +3,8 @@
 /* eslint-disable no-empty-function */
 /* eslint-disable getter-return */
 /* eslint-disable no-useless-constructor */
-import {TransitionState} from './state/TransitionState';
-import {Deferred} from '../Deferred';
+import { TransitionState } from './state/TransitionState';
+import { Deferred } from '../Deferred';
 
 /**
  * Class factory interface for controlling playback of a collection of animations. One animation can be played at any given time, crossfading between animations will result in playing a {@link TransitionState}.
@@ -35,28 +35,28 @@ export class AnimationPlayerInterface {
    *
    * @type {number}
    */
-  get transitionTime() {}
+  get transitionTime() { }
 
   /**
    * Sets the default number of seconds it takes to transition to a new animation.
    *
    * @type {number}
    */
-  set transitionTime(seconds) {}
+  set transitionTime(seconds) { }
 
   /**
    * Gets the default easing function to use when transitioning and setting weights.
    *
    * @type {Function}
    */
-  get easingFn() {}
+  get easingFn() { }
 
   /**
    * Sets the default easing function to use when transitioning and setting weights.
    *
    * @type {Function}
    */
-  set easingFn(fn) {}
+  set easingFn(fn) { }
 
   /**
    * Gets the state the layer is currently in control of.
@@ -64,7 +64,7 @@ export class AnimationPlayerInterface {
    * @readonly
    * @type {AbstractState}
    */
-  get currentState() {}
+  get currentState() { }
 
   /**
    * Gets the name of the state the layer is currently in control of.
@@ -72,7 +72,7 @@ export class AnimationPlayerInterface {
    * @readonly
    * @type {string}
    */
-  get currentAnimation() {}
+  get currentAnimation() { }
 
   /**
    * Gets whether or not the layer is currently transitioning to a new animation.
@@ -80,7 +80,7 @@ export class AnimationPlayerInterface {
    * @readonly
    * @type {boolean}
    */
-  get isTransitioning() {}
+  get isTransitioning() { }
 
   /**
    * Update the layer's current state to a new value. If transitionTime is defined and greater than zero, perform a smooth blend between any states that currently have non-zero weight values and the new state.
@@ -93,7 +93,7 @@ export class AnimationPlayerInterface {
    * @param {Function=} easingFn - Easing function to use when transitioning to a new state over time.
    * @param {Function=} onError - Function to execute if an error is encountered.
    */
-  _prepareCurrentState(name, playMethod, transitionTime, easingFn, onError) {}
+  _prepareCurrentState(name, playMethod, transitionTime, easingFn, onError) { }
 
   /**
    * Start playback an animation from the beginning.
@@ -108,21 +108,21 @@ export class AnimationPlayerInterface {
    *
    * @returns {Deferred}
    */
-  playAnimation(name, transitionTime, easingFn, onFinish, onError, onCancel, onNext) {}
+  playAnimation(name, transitionTime, easingFn, onFinish, onError, onCancel, onNext) { }
 
   /**
    * Cancel playback of the current animation.
    *
    * @returns {boolean}
    */
-  cancelAnimation() {}
+  cancelAnimation() { }
 
   /**
    * Pause playback of the current animation.
    *
    * @returns {boolean}
    */
-  pauseAnimation() {}
+  pauseAnimation() { }
 
   /**
    * Resume playback of an animation.
@@ -136,26 +136,26 @@ export class AnimationPlayerInterface {
    *
    * @returns {Deferred}
    */
-  resumeAnimation(name, transitionTime, easingFn, onFinish, onError, onCancel, onNext) {}
+  resumeAnimation(name, transitionTime, easingFn, onFinish, onError, onCancel, onNext) { }
 
   /**
    * Stop playback of the current animation.
    *
    * @returns {boolean}
    */
-  stopAnimation() {}
+  stopAnimation() { }
 
   /**
    * Update the current animation.
    *
    * @param {number} deltaTime - Time in milliseconds since the last update.
    */
-  update(deltaTime) {}
+  update(deltaTime) { }
 
   /**
    * Discard the transition state.
    */
-  discard() {}
+  discard() { }
 
   /**
    * Creates a class that implements {@link AnimationPlayerInterface} and extends a specified base class.
@@ -164,12 +164,13 @@ export class AnimationPlayerInterface {
    *
    * @return {Class} A class that extends `BaseClass` and implements {@link AnimationPlayerInterface}.
    */
-  static Mixin(BaseClass = class {}) {
+  static Mixin(BaseClass = class { }) {
     const AnimationPlayerMixin = class extends BaseClass {
       constructor(options = {}, ...args) {
         super(options, ...args);
 
         this._transitionState = new TransitionState();
+
         this._states = this._states !== undefined ? this._states : new Map();
         this._currentState = null;
         this._paused = false;
@@ -220,13 +221,14 @@ export class AnimationPlayerInterface {
       }
 
       _prepareCurrentState(name, playMethod, transitionTime, easingFn, onError) {
+        console.log('_prepareCurrentState()', name, playMethod, transitionTime, easingFn, onError);
+
         if (name !== null && !this._states.has(name)) {
           const e = new Error(`Cannot ${playMethod} animation ${name}. No animation exists with this name.`);
 
           if (typeof onError === 'function') {
             onError(e);
           }
-
           throw e;
         }
 

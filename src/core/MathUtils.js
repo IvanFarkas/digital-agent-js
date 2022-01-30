@@ -202,7 +202,9 @@ export class MathUtils {
       }
     });
 
-    return triangles.map((triangle) => triangle.indices);
+    const retVal = triangles.map((triangle) => triangle.indices);
+
+    return retVal;
   }
 
   /**

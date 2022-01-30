@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file */
-import {AnimationFeatureDependentInterface} from '../animpack/AnimationFeatureDependentInterface';
-import {HostObject} from '../HostObject';
+import { AnimationFeatureDependentInterface } from '../animpack/AnimationFeatureDependentInterface';
+import { HostObject } from '../HostObject';
 
 /**
  * Class factory interface for that keeps track of layers and animations on a host.
@@ -32,7 +32,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
    * @param {Function=} options.easingFn - Default easing function to use when manipulating layer weights on this layer.
    * @param {Object=} options.animations - Animations to keep track of on the layer. Animations are represented as key/value pairs of animation names and their options.
    */
-  registerLayer(name, options = {}) {}
+  registerLayer(name, options = {}) { }
 
   /**
    * Start tracking keeping track of whether an animation with the given name is present on the host.
@@ -41,7 +41,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
    * @param {string} animationName - Name of the animation to keep track of.
    * @param {Object=} options - Options for the animation.
    */
-  registerAnimation(layerName, animationName, options = {}) {}
+  registerAnimation(layerName, animationName, options = {}) { }
 
   /**
    * Set layer weights on tracked layers.
@@ -51,7 +51,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
    * @param {number=} seconds - Number of seconds it will take to reach the weight on each layer. If undefined, each layers' blendTime option is used.
    * @param {Function=} easingFn - Easing function to use when setting weight on each layer. If undefined, each layers' easingFn option is used.
    */
-  setLayerWeights(nameFilter = () => true, weight, seconds, easingFn) {}
+  setLayerWeights(nameFilter = () => true, weight, seconds, easingFn) { }
 
   /**
    * Set all tracked layers' weights to 1.
@@ -59,7 +59,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
    * @param {number=} seconds - Number of seconds it will take to reach the weight on each layer. If undefined, each layers' blendTime option is used.
    * @param {Function=} easingFn - Easing function to use when setting weight on each layer. If undefined, each layers' easingFn option is used.
    */
-  enable(seconds, easingFn) {}
+  enable(seconds, easingFn) { }
 
   /**
    * Set all tracked layers' weights to 0.
@@ -67,7 +67,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
    * @param {number=} seconds - Number of seconds it will take to reach the weight on each layer. If undefined, each layers' blendTime option is used.
    * @param {Function=} easingFn - Easing function to use when setting weight on each layer. If undefined, each layers' easingFn option is used.
    */
-  disable(seconds, easingFn) {}
+  disable(seconds, easingFn) { }
 
   /**
    * Creates a class that implements {@link ManagedAnimationLayerInterface} and extends a specified base class.
@@ -96,7 +96,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
 
         // Detect new layers
         this._host.AnimationFeature.layers.forEach((name) => {
-          this._onLayerAdded({name});
+          this._onLayerAdded({ name });
         });
       }
 
@@ -111,23 +111,23 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
 
         // Deactivate the layers
         Object.keys(this._managedLayers).forEach((name) => {
-          this._onLayerRemoved({name});
+          this._onLayerRemoved({ name });
         });
       }
 
-      _onLayerAdded({name}) {
+      _onLayerAdded({ name }) {
         // Mark the layer as active if it is managed
         if (this._managedLayers[name] !== undefined) {
           this._managedLayers[name].isActive = true;
 
           // Detect new animations
           this._host.AnimationFeature.getAnimations(name).forEach((animName) => {
-            this._onAnimationAdded({layerName: name, animationName: animName});
+            this._onAnimationAdded({ layerName: name, animationName: animName });
           });
         }
       }
 
-      _onLayerRemoved({name}) {
+      _onLayerRemoved({ name }) {
         // Deactivate the layer if it is managed
         if (this._managedLayers[name] !== undefined) {
           this._managedLayers[name].isActive = false;
@@ -142,7 +142,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
         }
       }
 
-      _onLayerRenamed({oldName, newName}) {
+      _onLayerRenamed({ oldName, newName }) {
         const layerOptions = this._managedLayers[oldName];
 
         // Replace the layer key with the new name
@@ -152,21 +152,21 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
         }
       }
 
-      _onAnimationAdded({layerName, animationName}) {
+      _onAnimationAdded({ layerName, animationName }) {
         // Mark the animation as active if it is managed
         if (this._managedLayers[layerName] !== undefined && this._managedLayers[layerName].animations[animationName] !== undefined) {
           this._managedLayers[layerName].animations[animationName].isActive = true;
         }
       }
 
-      _onAnimationRemoved({layerName, animationName}) {
+      _onAnimationRemoved({ layerName, animationName }) {
         // Deactivate the animation if it is managed
         if (this._managedLayers[layerName] !== undefined && this._managedLayers[layerName].animations[animationName] !== undefined) {
           this._managedLayers[layerName].animations[animationName].isActive = false;
         }
       }
 
-      _onAnimationRenamed({layerName, oldName, newName}) {
+      _onAnimationRenamed({ layerName, oldName, newName }) {
         if (this._managedLayers[layerName] !== undefined && this._managedLayers[layerName].animations[oldName] !== undefined) {
           // Replace the animation key with the new name
           const animOptions = this._managedLayers[layerName].animations[oldName];
@@ -186,7 +186,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
 
         // Update all options except animations
         const layerOptions = this._managedLayers[name];
-        options = {...options};
+        options = { ...options };
         const animationOptions = options.animations || {};
         delete options.animations;
         Object.assign(layerOptions, options);
@@ -212,7 +212,10 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
         this._managedLayers[layerName].animations[animationName] = animOptions;
 
         // Check whether the animation can be manipulated now
-        this._managedLayers[layerName].animations[animationName].isActive = this._managedLayers[layerName].isActive && this._host.AnimationFeature.getAnimations(layerName).includes(animationName);
+        const animation = this._managedLayers[layerName].animations[animationName];
+        const animations = this._host.AnimationFeature.getAnimations(layerName);
+        const isInAnimations = animations.includes(animationName);
+        animation.isActive = this._managedLayers[layerName].isActive && isInAnimations;
       }
 
       setLayerWeights(nameFilter = () => true, weight, seconds, easingFn) {
@@ -270,7 +273,7 @@ export class ManagedAnimationLayerInterface extends AnimationFeatureDependentInt
 // TODO: What do we do with this?
 Object.defineProperties(ManagedAnimationLayerInterface, {
   DEFAULT_LAYER_OPTIONS: {
-    value: {blendTime: 0.5, animations: {}},
+    value: { blendTime: 0.5, animations: {} },
     writable: false,
   },
 });

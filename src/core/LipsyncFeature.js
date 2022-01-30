@@ -1,9 +1,9 @@
-import {HostObject} from './HostObject';
-import {MathUtils} from './MathUtils';
-import {Quadratic} from './animpack/Easing';
-import {ManagedAnimationLayerInterface} from './animpack/ManagedAnimationLayerInterface';
-import {TextToSpeechFeatureDependentInterface} from './awspack/TextToSpeechFeatureDependentInterface';
-import {AbstractHostFeature} from './AbstractHostFeature';
+import { HostObject } from './HostObject';
+import { MathUtils } from './MathUtils';
+import { Quadratic } from './animpack/Easing';
+import { ManagedAnimationLayerInterface } from './animpack/ManagedAnimationLayerInterface';
+import { TextToSpeechFeatureDependentInterface } from './awspack/TextToSpeechFeatureDependentInterface';
+import { AbstractHostFeature } from './AbstractHostFeature';
 
 /**
  * Default mapping of Polly viseme names to animation options objects.
@@ -27,23 +27,23 @@ import {AbstractHostFeature} from './AbstractHostFeature';
  * @property {Object} [O={name: 'O'}]
  */
 export const DefaultVisemeMap = {
-  sil: {name: 'sil'},
-  p: {name: 'p', overrideWeight: 0.9},
-  t: {name: 't', blendTime: 0.2},
-  S: {name: 'S'},
-  T: {name: 'T'},
-  f: {name: 'f', overrideWeight: 0.75},
-  k: {name: 'k'},
-  i: {name: 'i'},
-  r: {name: 'r'},
-  s: {name: 's', blendTime: 0.25},
-  u: {name: 'u'},
-  '@': {name: '@'},
-  a: {name: 'a'},
-  e: {name: 'e', blendTime: 0.2},
-  E: {name: 'E'},
-  o: {name: 'o'},
-  O: {name: 'O'},
+  sil: { name: 'sil' },
+  p: { name: 'p', overrideWeight: 0.9 },
+  t: { name: 't', blendTime: 0.2 },
+  S: { name: 'S' },
+  T: { name: 'T' },
+  f: { name: 'f', overrideWeight: 0.75 },
+  k: { name: 'k' },
+  i: { name: 'i' },
+  r: { name: 'r' },
+  s: { name: 's', blendTime: 0.25 },
+  u: { name: 'u' },
+  '@': { name: '@' },
+  a: { name: 'a' },
+  e: { name: 'e', blendTime: 0.2 },
+  E: { name: 'E' },
+  o: { name: 'o' },
+  O: { name: 'O' },
 };
 
 /**
@@ -87,7 +87,7 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {Array.<Object>} [talkingOptions.layers=[]] - An array of layer options objects to register as talking layers.
    * @param {number} [visemeLeadTime=.067] - The amount of time to instruct the TextToSpeechFeature to emit speechmarks before each one's actual timestamp is reached. This will set the 'speechMarkOffset' variable on the TextToSpeechFeature.
    */
-  constructor(host, /* visemeOptions= */ {blendTime: visemeBlendTime = 0.15, decayRate: {amount = 0.5, seconds = 0.5} = {}, easingFn: visemeEasingFn = Quadratic.InOut, layers: visemeLayers = []}, /* talkingOptions= */ {blendTime: talkingBlendTime = 0.75, easingFn: talkingEasingFn = Quadratic.InOut, layers: talkingLayers = []}, visemeLeadTime = 0.067) {
+  constructor(host, /* visemeOptions= */ { blendTime: visemeBlendTime = 0.15, decayRate: { amount = 0.5, seconds = 0.5 } = {}, easingFn: visemeEasingFn = Quadratic.InOut, layers: visemeLayers = [] }, /* talkingOptions= */ { blendTime: talkingBlendTime = 0.75, easingFn: talkingEasingFn = Quadratic.InOut, layers: talkingLayers = [] }, visemeLeadTime = 0.067) {
     /*
     Smart function parameters - https://javascript.info/destructuring-assignment#smart-function-parameters
     Javascript Destructuring assignment - Setting a function parameters default value - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
@@ -116,18 +116,18 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
 
     // TODO: Test how input params are passed and used.
     // Register the viseme layers
-    visemeLayers.forEach(({name, animation, visemeMap = DefaultVisemeMap}) => {
+    visemeLayers.forEach(({ name, animation, visemeMap = DefaultVisemeMap }) => {
       this.registerVisemeLayer(name, {
         animation,
         visemeMap,
-        decayRate: {amount, seconds},
+        decayRate: { amount, seconds },
         blendTime: visemeBlendTime,
         easingFn: visemeEasingFn,
       });
     });
 
     // Register the talking layers
-    talkingLayers.forEach(({name, animation}) => {
+    talkingLayers.forEach(({ name, animation }) => {
       this.registerTalkingLayer(name, {
         animation,
         blendTime: talkingBlendTime,
@@ -145,15 +145,21 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {string} animationName - Name of the animation.
    */
   _registerVisemeAnimation(layerName, animationName) {
-    if (this._managedLayers[layerName].animations[animationName].isActive) {
-      if (this._host.AnimationFeature.getAnimationType(layerName, animationName) !== 'freeBlend') {
+    const animation = this._managedLayers[layerName].animations[animationName];
+
+    if (animation.isActive) {
+      const animationType = this._host.AnimationFeature.getAnimationType(layerName, animationName);
+
+      if (animationType !== 'freeBlend') {
         // Warn and deactivate if the registered state is not freeBlend
         console.warn(`Cannot register Lipsync viseme animation ${animationName} on layer ${layerName} for host ${this._host.id}. Viseme animations must be of type 'freeBlend'.`);
-        this._managedLayers[layerName].animations[animationName].isActive = false;
+        animation.isActive = false;
       } else {
+        const animationBlendNames = this._host.AnimationFeature.getAnimationBlendNames(layerName, animationName);
+
         // Check if the blendWeights can be manipulated now
-        const weightNames = this._host.AnimationFeature.getAnimationBlendNames(layerName, animationName);
-        const {visemeMap} = this._managedLayers[layerName].animations[animationName];
+        const weightNames = animationBlendNames;
+        const { visemeMap } = animation;
 
         Object.values(visemeMap).forEach((visemeOptions) => {
           visemeOptions.isActive = weightNames.includes(visemeOptions.name);
@@ -188,8 +194,8 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {Object} event - Event data passed from the speech.
    * @param {Object} event.name - Viseme Layer object.
    */
-  _onLayerAdded({name}) {
-    super._onLayerAdded({name});
+  _onLayerAdded({ name }) {
+    super._onLayerAdded({ name });
 
     // Validate the viseme animation
     if (this._visemeLayers[name] !== undefined) {
@@ -206,8 +212,8 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {Object} event.layerName - Viseme Layer object.
    * @param {Object} event.animationName - Viseme Layer object.
    */
-  _onAnimationAdded({layerName, animationName}) {
-    super._onAnimationAdded({layerName});
+  _onAnimationAdded({ layerName, animationName }) {
+    super._onAnimationAdded({ layerName });
 
     // Validate the viseme animation
     if (this._visemeLayers[layerName] === animationName) {
@@ -279,10 +285,10 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {Object} event - Event data passed from the speech.
    * @param {Object} event.mark - Speechmark object.
    */
-  async _onViseme({mark}) {
+  async _onViseme({ mark }) {
     Object.entries(this._visemeLayers).forEach(([layerName, animName]) => {
       // Make sure the layer can be manipulated
-      const {isActive, visemeMap} = this._managedLayers[layerName].animations[animName];
+      const { isActive, visemeMap } = this._managedLayers[layerName].animations[animName];
 
       if (!isActive) {
         return;
@@ -426,13 +432,13 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {Function=} options.easingFn - Default easing function to use when manipulating animation blendWeights.
    * @param {Object} [options.visemeMap=DefaultVisemeMap] - Object containing key/value pairs of Polly viseme names mapped to objects containing the name of the corresponding animation blendWeight and any other animation options to use such as viseme specific blend times and easing functions.
    */
-  registerVisemeLayer(layerName, {animation = 'visemes', decayRate = {amount: 0.5, seconds: 0.5}, blendTime = LipsyncFeature.DEFAULT_LAYER_OPTIONS.blendTime, easingFn, visemeMap = DefaultVisemeMap} = {}) {
+  registerVisemeLayer(layerName, { animation = 'visemes', decayRate = { amount: 0.5, seconds: 0.5 }, blendTime = LipsyncFeature.DEFAULT_LAYER_OPTIONS.blendTime, easingFn, visemeMap = DefaultVisemeMap } = {}) {
     // Register the layer and animation
     this.registerLayer(layerName, {
       decayRate,
       blendTime,
       easingFn,
-      animations: {[animation]: {visemeMap}},
+      animations: { [animation]: { visemeMap } },
     });
     this._visemeLayers[layerName] = animation;
 
@@ -449,12 +455,12 @@ export class LipsyncFeature extends AbstractHostFeature.mix(TextToSpeechFeatureD
    * @param {number} [options.blendTime=[LipsyncFeature.DEFAULT_LAYER_OPTIONS.blendTime]{@link LipsyncFeature#DEFAULT_LAYER_OPTIONS#blendTime}] - Default amount of time to use when manipulating the layer's weights.
    * @param {Function=} options.easingFn - Default easing function to use when manipulating the layer's weights.
    */
-  registerTalkingLayer(layerName, {animation = 'stand_talk', blendTime = LipsyncFeature.DEFAULT_LAYER_OPTIONS.blendTime, easingFn} = {}) {
+  registerTalkingLayer(layerName, { animation = 'stand_talk', blendTime = LipsyncFeature.DEFAULT_LAYER_OPTIONS.blendTime, easingFn } = {}) {
     // Register the layer and animation
     this.registerLayer(layerName, {
       blendTime,
       easingFn,
-      animations: {[animation]: {}},
+      animations: { [animation]: {} },
     });
     this._talkingLayers[layerName] = animation;
   }

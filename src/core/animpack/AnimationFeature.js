@@ -1,14 +1,14 @@
-import {AbstractHostFeature} from '../AbstractHostFeature';
-import {Utils} from '../Utils';
-import {QueueState} from './state/QueueState';
-import {FreeBlendState} from './state/FreeBlendState';
-import {Blend1dState} from './state/Blend1dState';
-import {Blend2dState} from './state/Blend2dState';
-import {SingleState} from './state/SingleState';
-import {RandomAnimationState} from './state/RandomAnimationState';
-import {AnimationLayer, LayerBlendModes} from './AnimationLayer';
-import {Deferred} from '../Deferred';
-import {HostObject} from '../HostObject';
+import { AbstractHostFeature } from '../AbstractHostFeature';
+import { Utils } from '../Utils';
+import { QueueState } from './state/QueueState';
+import { FreeBlendState } from './state/FreeBlendState';
+import { Blend1dState } from './state/Blend1dState';
+import { Blend2dState } from './state/Blend2dState';
+import { SingleState } from './state/SingleState';
+import { RandomAnimationState } from './state/RandomAnimationState';
+import { AnimationLayer, LayerBlendModes } from './AnimationLayer';
+import { Deferred } from '../Deferred';
+import { HostObject } from '../HostObject';
 
 /**
  * Enum for animation state classes.
@@ -155,11 +155,11 @@ export class AnimationFeature extends AbstractHostFeature {
    * @returns {FreeBlendState}
    */
   _createFreeBlendState(options) {
-    const {blendStateOptions = []} = options;
+    const { blendStateOptions = [] } = options;
 
     const blendStates = [];
     blendStateOptions.forEach((blendOptions) => {
-      blendStates.push(this._createSingleState({...blendOptions, blendMode: options.blendMode}));
+      blendStates.push(this._createSingleState({ ...blendOptions, blendMode: options.blendMode }));
     });
 
     return new FreeBlendState(options, blendStates);
@@ -180,7 +180,7 @@ export class AnimationFeature extends AbstractHostFeature {
    * @returns {QueueState}
    */
   _createQueueState(options) {
-    const {queueOptions = []} = options;
+    const { queueOptions = [] } = options;
 
     const queueStates = queueOptions.map((queueOption) =>
       this._createSingleState({
@@ -211,13 +211,13 @@ export class AnimationFeature extends AbstractHostFeature {
    * @returns {Blend1dState}
    */
   _createBlend1dState(options) {
-    const {blendStateOptions = []} = options;
-    const {blendThresholds = []} = options;
-    const {blendMatchPhases = []} = options;
+    const { blendStateOptions = [] } = options;
+    const { blendThresholds = [] } = options;
+    const { blendMatchPhases = [] } = options;
 
     const blendStates = [];
     blendStateOptions.forEach((blendOptions) => {
-      blendStates.push(this._createSingleState({...blendOptions, blendMode: options.blendMode}));
+      blendStates.push(this._createSingleState({ ...blendOptions, blendMode: options.blendMode }));
     });
 
     return new Blend1dState(options, blendStates, blendThresholds, blendMatchPhases);
@@ -241,13 +241,13 @@ export class AnimationFeature extends AbstractHostFeature {
    * @returns {Blend2dState}
    */
   _createBlend2dState(options) {
-    const {blendStateOptions = []} = options;
-    const {blendThresholds = []} = options;
-    const {blendMatchPhases = []} = options;
+    const { blendStateOptions = [] } = options;
+    const { blendThresholds = [] } = options;
+    const { blendMatchPhases = [] } = options;
 
     const blendStates = [];
     blendStateOptions.forEach((blendOptions) => {
-      blendStates.push(this._createSingleState({...blendOptions, blendMode: options.blendMode}));
+      blendStates.push(this._createSingleState({ ...blendOptions, blendMode: options.blendMode }));
     });
 
     return new Blend2dState(options, blendStates, blendThresholds, blendMatchPhases);
@@ -266,7 +266,7 @@ export class AnimationFeature extends AbstractHostFeature {
    * @returns {RandomAnimationState}
    */
   _createRandomAnimationState(options) {
-    const {subStateOptions = []} = options;
+    const { subStateOptions = [] } = options;
 
     const subStates = [];
     subStateOptions.forEach((subStateOptions) => {
@@ -369,7 +369,7 @@ export class AnimationFeature extends AbstractHostFeature {
       console.warn(`Layer name ${name} is not unique. New layer will be added with the name ${layerName}.`);
     }
 
-    const layer = new AnimationLayer({...options, name: layerName});
+    const layer = new AnimationLayer({ ...options, name: layerName });
     this._layerMap[layerName] = layer;
 
     if (layerIndex === numLayers) {
@@ -379,7 +379,7 @@ export class AnimationFeature extends AbstractHostFeature {
     }
 
     // Notify that a layer has been added to the feature
-    const eventData = {name: layerName, index: layerIndex};
+    const eventData = { name: layerName, index: layerIndex };
     this.emit(this.constructor.EVENTS.addLayer, eventData);
 
     return eventData;
@@ -407,7 +407,7 @@ export class AnimationFeature extends AbstractHostFeature {
     delete this._layerMap[name];
 
     // Notify that a layer has been removed from the feature
-    this.emit(this.constructor.EVENTS.removeLayer, {name, index});
+    this.emit(this.constructor.EVENTS.removeLayer, { name, index });
 
     return true;
   }
@@ -758,7 +758,7 @@ export class AnimationFeature extends AbstractHostFeature {
       throw new Error(`Get animation type for animation ${animationName} on layer ${layerName} from host ${this._host.id}. No animation exists with this name.`);
     }
 
-    const {constructor} = state;
+    const { constructor } = state;
 
     return Object.keys(AnimationTypes).find((typeName) => AnimationTypes[typeName] === constructor);
   }
@@ -773,6 +773,12 @@ export class AnimationFeature extends AbstractHostFeature {
    * @returns {string} - The name of the animation that was added
    */
   addAnimation(layerName, animationName, animationType = AnimationTypes.single, options = {}) {
+    const debug = layerName === 'Viseme' && animationName === 'visemes';
+
+    if (debug) {
+      console.log('addAnimation()', layerName, animationName, animationType, options);
+    }
+
     options.name = this._validateNewAnimation(layerName, animationName);
 
     // Make sure the animation type is valid
@@ -781,11 +787,12 @@ export class AnimationFeature extends AbstractHostFeature {
     }
 
     const layer = this._layerMap[layerName];
+
     options.blendMode = layer.blendMode;
     options.transitionTime = layer.transitionTime;
-    const state = this[`_create${animationType.name}`](options);
 
-    const name = layer.addState(state);
+    const state = this[`_create${animationType.name}`](options);
+    const name = layer.addState(state, debug);
 
     // Notify that an animation has been added to the feature
     this.emit(this.constructor.EVENTS.addAnimation, {
@@ -896,7 +903,7 @@ export class AnimationFeature extends AbstractHostFeature {
           animationName,
         });
       },
-      ({name, canAdvance, isQueueEnd}) => {
+      ({ name, canAdvance, isQueueEnd }) => {
         if (layer.currentAnimation === animationName) {
           // Notify that a new animation has begun
           this.emit(this.constructor.EVENTS.playNextAnimation, {
@@ -943,7 +950,7 @@ export class AnimationFeature extends AbstractHostFeature {
       return Deferred.reject(e);
     }
 
-    const onNext = ({name, canAdvance, isQueueEnd}) => {
+    const onNext = ({ name, canAdvance, isQueueEnd }) => {
       if (layer.currentAnimation === animationName) {
         // Notify that a new animation has begun
         this.emit(this.constructor.EVENTS.playNextAnimation, {
@@ -1036,7 +1043,7 @@ export class AnimationFeature extends AbstractHostFeature {
           animationName,
         });
       },
-      ({name, canAdvance, isQueueEnd}) => {
+      ({ name, canAdvance, isQueueEnd }) => {
         if (layer.currentAnimation === animationName) {
           // Notify that a new animation has begun
           this.emit(this.constructor.EVENTS.playNextAnimation, {
