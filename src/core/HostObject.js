@@ -1,7 +1,7 @@
-import {Messenger} from './Messenger';
-import {AbstractHostFeature} from './AbstractHostFeature';
-import {Deferred} from './Deferred';
-import {Utils} from './Utils';
+import { Messenger } from './Messenger';
+import { AbstractHostFeature } from './AbstractHostFeature';
+import { Deferred } from './Deferred';
+import { Utils } from './Utils';
 
 /**
  * Object that manages access to all Host features. Contains a reference to engine-specific visuals if applicable.
@@ -26,7 +26,7 @@ export class HostObject extends Messenger {
    * @param {Object=} options - Options for the host.
    * @param {Object=} options.owner - Optional engine-specific owner of the host.
    */
-  constructor({owner = {}} = {}) {
+  constructor({ owner = {} } = {}) {
     // If an owner is specified, use its id for messaging
     super(owner.id);
 
@@ -101,8 +101,8 @@ export class HostObject extends Messenger {
    *
    * @returns {Deferred | Promise<void>}
    */
-  wait(seconds, {onFinish, onProgress, onCancel, onError} = {}) {
-    const wait = Utils.wait(seconds, {onFinish, onProgress, onCancel, onError});
+  wait(seconds, { onFinish, onProgress, onCancel, onError } = {}) {
+    const wait = Utils.wait(seconds, { onFinish, onProgress, onCancel, onError });
     this._waits.push(wait);
 
     // Once the wait promise is no longer pending remove it from the waits array
@@ -130,6 +130,7 @@ export class HostObject extends Messenger {
     if (inputType !== 'function') {
       throw new Error(`Cannot add feature to host ${this.id}. FeatureClass must be a class.`);
     }
+
     // Make sure the feature is a host feature
     else if (!(FeatureClass.prototype instanceof AbstractHostFeature)) {
       throw new Error(`Cannot add feature ${FeatureClass.name} to host ${this.id}. FeatureClass must extend AbstractHostFeature.`);
@@ -170,7 +171,6 @@ export class HostObject extends Messenger {
       this.emit(this.constructor.EVENTS.removeFeature, typeName);
       this._features[typeName].discard();
       delete this._features[typeName];
-
       return true;
     }
   }

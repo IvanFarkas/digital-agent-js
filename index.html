@@ -278,102 +278,26 @@
         `${animationPath2}/${poiConfigFile}`
       ).then(response => response.json());
 
-      const [
-        idleClips1,
-        lipsyncClips1,
-        gestureClips1,
-        emoteClips1,
-        faceClips1,
-        blinkClips1,
-        poiClips1,
-      ] = clips1;
-      const host1 = createHost(
-        character1,
-        audioAttach1,
-        voice1,
-        voiceEngine,
-        idleClips1[0],
-        faceClips1[0],
-        lipsyncClips1,
-        gestureClips1,
-        gestureConfig1,
-        emoteClips1,
-        blinkClips1,
-        poiClips1,
-        poiConfig1,
-        lookTracker1,
-        bindPoseOffset1,
-        clock,
-        camera,
-        scene
-      );
-      const [
-        idleClips2,
-        lipsyncClips2,
-        gestureClips2,
-        emoteClips2,
-        faceClips2,
-        blinkClips2,
-        poiClips2,
-      ] = clips2;
-      const host2 = createHost(
-        character2,
-        audioAttach2,
-        voice2,
-        voiceEngine,
-        idleClips2[0],
-        faceClips2[0],
-        lipsyncClips2,
-        gestureClips2,
-        gestureConfig2,
-        emoteClips2,
-        blinkClips2,
-        poiClips2,
-        poiConfig2,
-        lookTracker2,
-        bindPoseOffset2,
-        clock,
-        camera,
-        scene
-      );
+      const [idleClips1, lipsyncClips1, gestureClips1, emoteClips1, faceClips1, blinkClips1, poiClips1] = clips1;
+      const host1 = createHost(character1, audioAttach1, voice1, voiceEngine, idleClips1[0], faceClips1[0], lipsyncClips1, gestureClips1, gestureConfig1, emoteClips1, blinkClips1, poiClips1, poiConfig1, lookTracker1, bindPoseOffset1, clock, camera, scene);
+      const [idleClips2, lipsyncClips2, gestureClips2, emoteClips2, faceClips2, blinkClips2, poiClips2] = clips2;
+      const host2 = createHost(character2, audioAttach2, voice2, voiceEngine, idleClips2[0], faceClips2[0], lipsyncClips2, gestureClips2, gestureConfig2, emoteClips2, blinkClips2, poiClips2, poiConfig2, lookTracker2, bindPoseOffset2, clock, camera, scene);
 
       // Set up each host to look at the other when the other speaks and at the
       // camera when speech ends
-      const onHost1StartSpeech = () => {
-        host2.PointOfInterestFeature.setTarget(lookTracker1);
-      };
-      const onHost2StartSpeech = () => {
-        host1.PointOfInterestFeature.setTarget(lookTracker2);
-      };
+      const onHost1StartSpeech = () => { host2.PointOfInterestFeature.setTarget(lookTracker1); };
+      const onHost2StartSpeech = () => { host1.PointOfInterestFeature.setTarget(lookTracker2); };
       const onStopSpeech = () => {
         host1.PointOfInterestFeature.setTarget(camera);
         host2.PointOfInterestFeature.setTarget(camera);
       };
 
-      host1.listenTo(
-        host1.TextToSpeechFeature.EVENTS.play,
-        onHost1StartSpeech
-      );
-      host1.listenTo(
-        host1.TextToSpeechFeature.EVENTS.resume,
-        onHost1StartSpeech
-      );
-      host2.listenTo(
-        host2.TextToSpeechFeature.EVENTS.play,
-        onHost2StartSpeech
-      );
-      host2.listenTo(
-        host2.TextToSpeechFeature.EVENTS.resume,
-        onHost2StartSpeech
-      );
-      HOST.aws.TextToSpeechFeature.listenTo(
-        HOST.aws.TextToSpeechFeature.EVENTS.pause,
-        onStopSpeech
-      );
-      HOST.aws.TextToSpeechFeature.listenTo(
-        HOST.aws.TextToSpeechFeature.EVENTS.stop,
-        onStopSpeech
-      );
+      host1.listenTo(host1.TextToSpeechFeature.EVENTS.play, onHost1StartSpeech);
+      host1.listenTo(host1.TextToSpeechFeature.EVENTS.resume, onHost1StartSpeech);
+      host2.listenTo(host2.TextToSpeechFeature.EVENTS.play, onHost2StartSpeech);
+      host2.listenTo(host2.TextToSpeechFeature.EVENTS.resume, onHost2StartSpeech);
+      HOST.aws.TextToSpeechFeature.listenTo(HOST.aws.TextToSpeechFeature.EVENTS.pause, onStopSpeech);
+      HOST.aws.TextToSpeechFeature.listenTo(HOST.aws.TextToSpeechFeature.EVENTS.stop, onStopSpeech);
 
       // Hide the load screen and show the text input
       document.getElementById('textToSpeech').style.display = 'inline-block';
@@ -398,15 +322,12 @@
         tab.onclick = evt => { toggleHost(evt); }
       });
 
-      // Play, pause, resume and stop the contents of the text input as speech
-      // when buttons are clicked
+      // Play, pause, resume and stop the contents of the text input as speech when buttons are clicked
       ['play', 'pause', 'resume', 'stop'].forEach(id => {
         const button = document.getElementById(id);
         button.onclick = () => {
           const { name, host } = getCurrentHost(speakers);
-          const speechInput = document.getElementsByClassName(
-            `textEntry ${name}`
-          )[0];
+          const speechInput = document.getElementsByClassName(`textEntry ${name}`)[0];
           host.TextToSpeechFeature[id](speechInput.value);
         };
       });
@@ -415,18 +336,10 @@
       const gestureButton = document.getElementById('gestures');
       gestureButton.onclick = () => {
         const { name, host } = getCurrentHost(speakers);
-        const speechInput = document.getElementsByClassName(
-          `textEntry ${name}`
-        )[0];
+        const speechInput = document.getElementsByClassName(`textEntry ${name}`)[0];
         const gestureMap = host.GestureFeature.createGestureMap();
-        const gestureArray = host.GestureFeature.createGenericGestureArray([
-          'Gesture',
-        ]);
-        speechInput.value = HOST.aws.TextToSpeechUtils.autoGenerateSSMLMarks(
-          speechInput.value,
-          gestureMap,
-          gestureArray
-        );
+        const gestureArray = host.GestureFeature.createGenericGestureArray(['Gesture']);
+        speechInput.value = HOST.aws.TextToSpeechUtils.autoGenerateSSMLMarks(speechInput.value, gestureMap, gestureArray);
       };
 
       // Play emote on demand with emote button

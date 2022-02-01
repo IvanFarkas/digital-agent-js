@@ -92,7 +92,7 @@ export class StateContainerInterface {
 
       addState(state, debug = false) {
         if (debug) {
-          console.log('addState()', state);
+          // console.log('addState()', state);
         }
 
         // Make sure the state is not already in this container
@@ -111,7 +111,7 @@ export class StateContainerInterface {
 
         this._states.set(state.name, state);
         if (debug) {
-          console.log('this._states.set()', state.name, state);
+          // console.log('this._states.set()', state.name, state);
         }
 
         return state.name;

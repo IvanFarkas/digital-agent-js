@@ -1,4 +1,4 @@
-import {Deferred} from './Deferred';
+import { Deferred } from './Deferred';
 
 /**
  * A collection of useful generic functions.
@@ -46,7 +46,7 @@ export class Utils {
 
     // Separate the name into string and trailing numbers
     const matchGroup = name.match(/\d*$/);
-    const {index} = matchGroup;
+    const { index } = matchGroup;
     const baseName = name.slice(0, index);
     let increment = Number(matchGroup[0]);
 
@@ -79,7 +79,7 @@ export class Utils {
    *
    * @returns {Promise<void>}
    */
-  static wait(seconds = 0, {onFinish, onProgress, onCancel, onError} = {}) {
+  static wait(seconds = 0, { onFinish, onProgress, onCancel, onError } = {}) {
     // Make sure seconds is numeric
     if (typeof seconds !== 'number') {
       console.warn(`Invalid seconds value ${seconds} for wait. Defaulting to 0.`);
@@ -153,5 +153,33 @@ export class Utils {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  static getParents(obj, isClass = false) {
+    const parents = [];
+
+    if (obj !== undefined) {
+      let base = obj;
+
+      do {
+        base = Object.getPrototypeOf(base);
+        if (base && base.constructor.name !== undefined && base.constructor.name !== 'Object') {
+          if (isClass) {
+            if (base.name !== '') {
+              parents.push(base.name);
+            }
+          } else {
+            if (base.constructor.name !== '') {
+              parents.push(base.constructor.name);
+            }
+          }
+        }
+      } while (base.constructor.name !== 'Object');
+    }
+    return parents;
+  }
+
+  static isChildOf(obj, className, isClass = false) {
+    return this.getParents(obj, isClass).includes(className);
   }
 }

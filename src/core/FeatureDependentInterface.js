@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-classes-per-file */
-import {HostObject} from './HostObject';
+import { HostObject } from './HostObject';
+import { Utils } from './Utils';
 
 /**
  * Class factory interface for features that are dependent on other features being present on the host. Event dependencies will be listened for when a feature of matching type is added to the host and will stop being listened for when one is removed. If the feature is already present when constructed, events will be listened for right away.
@@ -19,7 +20,7 @@ export class FeatureDependentInterface {
    *
    * @param {string} typeName - type of feature to listen for.
    */
-  _onFeatureAdded(typeName) {}
+  _onFeatureAdded(typeName) { }
 
   /**
    * Stop listening for event dependencies that match the given feature type.
@@ -28,12 +29,12 @@ export class FeatureDependentInterface {
    *
    * @param {string} typeName - type of feature to stop listening for.
    */
-  _onFeatureRemoved(typeName) {}
+  _onFeatureRemoved(typeName) { }
 
   /**
    * @augments {@link AbstractHostFeature#discard}
    */
-  discard() {}
+  discard() { }
 
   /**
    * Creates a class that implements {@link FeatureDependentInterface} and extends a specified base class.
@@ -48,6 +49,8 @@ export class FeatureDependentInterface {
         super(host);
         this._host = host;
 
+        const parents = Utils.getParents(this);
+
         // No need to listen for events if the mixin is in the prototype chain multiple times
         if (!this._initialized) {
           this._initialized = true;
@@ -59,8 +62,11 @@ export class FeatureDependentInterface {
           this._host.listenTo(HostObject.EVENTS.addFeature, this._onFeatureAdded);
           this._host.listenTo(HostObject.EVENTS.removeFeature, this._onFeatureRemoved);
 
+          const eventDependencies = this.constructor.EVENT_DEPENDENCIES;
+          const eventDependencyKeys = Object.keys(eventDependencies);
+
           // Register features that already exist
-          Object.keys(this.constructor.EVENT_DEPENDENCIES).forEach((typeName) => {
+          eventDependencyKeys.forEach((typeName, index, array) => {
             if (this._host[typeName] !== undefined) {
               this._onFeatureAdded(typeName);
             }
@@ -69,33 +75,41 @@ export class FeatureDependentInterface {
       }
 
       _onFeatureAdded(typeName) {
-        if (this.constructor.EVENT_DEPENDENCIES[typeName] !== undefined) {
-          const events = this.constructor.EVENT_DEPENDENCIES[typeName];
+        const eventDependencies = this.constructor.EVENT_DEPENDENCIES[typeName];
 
-          Object.entries(events).forEach(([eventName, callback]) => {
+        if (eventDependencies !== undefined) {
+          const eventDependencyMap = Object.entries(eventDependencies);
+
+          eventDependencyMap.forEach(([eventName, callback], index, array) => {
             this[callback] = this[callback].bind(this);
-            this._host.listenTo(this._host[typeName].EVENTS[eventName], this[callback]);
+            const events = this._host[typeName].EVENTS[eventName];
+
+            this._host.listenTo(events, this[callback]);
           });
         }
       }
 
       _onFeatureRemoved(typeName) {
-        if (this.constructor.EVENT_DEPENDENCIES[typeName] !== undefined) {
-          const events = this.constructor.EVENT_DEPENDENCIES[typeName];
+        const eventDependencies = this.constructor.EVENT_DEPENDENCIES[typeName];
 
-          Object.entries(events).forEach(([eventName, callback]) => {
-            this._host.stopListening(this._host[typeName].EVENTS[eventName], this[callback]);
+        if (eventDependencies !== undefined) {
+          Object.entries(eventDependencies).forEach(([eventName, callback]) => {
+            const events = this._host[typeName].EVENTS[eventName];
+
+            this._host.stopListening(events, this[callback]);
           });
         }
       }
 
       discard() {
+        const eventDependencies = this.constructor.EVENT_DEPENDENCIES[typeName];
+
         // Stop listening for feature events
         this._host.stopListening(HostObject.EVENTS.addFeature, this._onFeatureAdded);
         this._host.stopListening(HostObject.EVENTS.removeFeature, this._onFeatureRemoved);
 
         // Stop listening to feature-specific events
-        Object.keys(this.constructor.EVENT_DEPENDENCIES).forEach((typeName) => {
+        Object.keys(eventDependencies).forEach((typeName) => {
           if (this._host[typeName] !== undefined) {
             this._onFeatureRemoved(typeName);
           }

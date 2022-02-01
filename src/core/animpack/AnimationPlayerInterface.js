@@ -221,7 +221,7 @@ export class AnimationPlayerInterface {
       }
 
       _prepareCurrentState(name, playMethod, transitionTime, easingFn, onError) {
-        console.log('_prepareCurrentState()', name, playMethod, transitionTime, easingFn, onError);
+        // console.log('_prepareCurrentState()', name, playMethod, transitionTime, easingFn, onError);
 
         if (name !== null && !this._states.has(name)) {
           const e = new Error(`Cannot ${playMethod} animation ${name}. No animation exists with this name.`);

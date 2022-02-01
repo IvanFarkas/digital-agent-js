@@ -214,12 +214,11 @@ export class AnimationFeature extends AbstractHostFeature {
     const { blendStateOptions = [] } = options;
     const { blendThresholds = [] } = options;
     const { blendMatchPhases = [] } = options;
-
     const blendStates = [];
+
     blendStateOptions.forEach((blendOptions) => {
       blendStates.push(this._createSingleState({ ...blendOptions, blendMode: options.blendMode }));
     });
-
     return new Blend1dState(options, blendStates, blendThresholds, blendMatchPhases);
   }
 
@@ -244,12 +243,11 @@ export class AnimationFeature extends AbstractHostFeature {
     const { blendStateOptions = [] } = options;
     const { blendThresholds = [] } = options;
     const { blendMatchPhases = [] } = options;
-
     const blendStates = [];
+
     blendStateOptions.forEach((blendOptions) => {
       blendStates.push(this._createSingleState({ ...blendOptions, blendMode: options.blendMode }));
     });
-
     return new Blend2dState(options, blendStates, blendThresholds, blendMatchPhases);
   }
 
@@ -776,7 +774,7 @@ export class AnimationFeature extends AbstractHostFeature {
     const debug = layerName === 'Viseme' && animationName === 'visemes';
 
     if (debug) {
-      console.log('addAnimation()', layerName, animationName, animationType, options);
+      // console.log('addAnimation()', layerName, animationName, animationType, options);
     }
 
     options.name = this._validateNewAnimation(layerName, animationName);
@@ -795,10 +793,7 @@ export class AnimationFeature extends AbstractHostFeature {
     const name = layer.addState(state, debug);
 
     // Notify that an animation has been added to the feature
-    this.emit(this.constructor.EVENTS.addAnimation, {
-      layerName,
-      animationName: name,
-    });
+    this.emit(this.constructor.EVENTS.addAnimation, { layerName, animationName: name, });
 
     return name;
   }
